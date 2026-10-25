@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hanna & Balázs</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&family=Pinyon+Script&display=swap">
+<style>
+/* Layout: full-photo welcome card, then an arched balcony portrait beside the invitation text, then the RSVP card floating over the tree photo. */
+:root {
+  --paper: #f3f4ee;
+  --card: rgba(251, 250, 246, 0.88);
+  --veil: #f7f6f1;
+  --ink: #2c3550;
+  --ink-soft: #5f6679;
+  --rose: #ecccc9;
+  --rose-deep: #c4888a;
+  --sage: #c3d0b6;
+  --sage-deep: #7d936e;
+  --sky: #cbd8e8;
+  --line: rgba(44, 53, 80, 0.16);
+  --display: "Cormorant Garamond", "Cormorant", Garamond, "Times New Roman", serif;
+  --script: "Pinyon Script", "Snell Roundhand", "Apple Chancery", cursive;
+  --body: "Jost", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  font-weight: 300;
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+body.locked { overflow: hidden; }
+img { max-width: 100%; display: block; }
+h1, h2 { font-family: var(--display); font-weight: 300; font-style: italic; line-height: 1.1; margin: 0; text-wrap: balance; }
+.eyebrow {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--sage-deep);
+}
+.names { font-family: var(--script); font-weight: 400; line-height: 1; }
+.sprig { width: 120px; height: 40px; color: var(--sage-deep); }
+.wrap {
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* Welcome card */
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: var(--veil);
+  transition: opacity 0.9s ease, transform 1.2s ease, visibility 0s linear 1.2s;
+}
+.splash.gone { opacity: 0; transform: scale(1.04); visibility: hidden; }
+.splash img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 55%; }
+.splash-veil {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  padding-top: calc(40px + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(44px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background:
+    linear-gradient(to bottom, rgba(247, 246, 241, 0.95) 0%, rgba(247, 246, 241, 0.7) 20%, rgba(247, 246, 241, 0) 36%),
+    linear-gradient(to top, rgba(247, 246, 241, 0.97) 0%, rgba(247, 246, 241, 0.8) 18%, rgba(247, 246, 241, 0) 32%);
+}
+.splash-top, .splash-bottom { display: grid; justify-items: center; gap: 14px; }
+@media (min-aspect-ratio: 1 / 1) {
+  .splash { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .splash img { grid-column: 2; grid-row: 1; object-position: 50% 62%; }
+  .splash-veil { position: static; grid-column: 1; grid-row: 1; justify-content: center; gap: 28px; background: var(--veil); }
+}
+.splash .names { font-size: clamp(56px, 13vw, 104px); color: var(--ink); }
+.splash p { margin: 0; max-width: 30ch; color: var(--ink-soft); }
+.btn {
+  appearance: none;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: #fbfaf6;
+  font: 500 13px/1 var(--body);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 17px 30px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+.btn:hover { background: transparent; color: var(--ink); }
+.btn:focus-visible, .chip input:focus-visible + span, .stepper button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--rose-deep);
+  outline-offset: 3px;
+}
+
+/* Invitation */
+.intro { padding-block: clamp(56px, 10vw, 120px); }
+.intro-grid {
+  max-width: 1080px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: clamp(32px, 7vw, 96px);
+  align-items: center;
+}
+.portrait {
+  aspect-ratio: 4 / 5;
+  max-width: 100%;
+  overflow: hidden;
+  background: var(--sage);
+}
+.portrait img { width: 100%; height: 100%; object-fit: cover; object-position: 74% 40%; }
+.intro-text { display: grid; gap: 22px; min-width: 0; }
+.intro-text h1 { font-size: clamp(40px, 6vw, 68px); }
+.intro-text p { margin: 0; max-width: 46ch; color: var(--ink-soft); }
+.facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 8px 0 0;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+.facts div { min-width: 0; }
+.facts dt { font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--sage-deep); }
+.facts dd { margin: 4px 0 0; font-family: var(--display); font-size: 21px; line-height: 1.3; }
+.scroll-cue { justify-self: start; color: var(--ink); text-decoration: none; font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 500; border-bottom: 1px solid var(--rose-deep); padding-bottom: 4px; }
+
+/* RSVP: tree photo fills the right side, the card overlaps its left edge */
+.rsvp { position: relative; padding-block: clamp(80px, 10vw, 140px); overflow: hidden; }
+.rsvp-bg { position: absolute; top: 0; bottom: 0; left: 32%; right: 0; }
+.rsvp-bg img { width: 100%; height: 100%; object-fit: cover; object-position: 57% 40%; }
+@media (max-width: 760px) {
+  .rsvp { padding-top: 0; }
+  .rsvp-bg { position: relative; left: auto; height: 520px; margin-left: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); margin-right: calc(-1 * max(16px, env(safe-area-inset-right, 0px))); }
+  .rsvp-bg img { object-position: 71% 30%; }
+  .card { position: relative; margin-top: -110px; }
+}
+.rsvp-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(243, 244, 238, 0.15), rgba(203, 216, 232, 0.25) 50%, rgba(243, 244, 238, 0.55));
+}
+.rsvp-inner { position: relative; margin-left: clamp(0px, 5vw, 96px); }
+.card {
+  max-width: 600px;
+  background: var(--card);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+  backdrop-filter: blur(16px) saturate(1.1);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 4px;
+  padding: clamp(28px, 6vw, 56px);
+  box-shadow: 0 30px 80px -40px rgba(44, 53, 80, 0.45);
+}
+.card-head { display: grid; justify-items: center; gap: 10px; text-align: center; margin-bottom: 34px; }
+.card-head h2 { font-size: clamp(38px, 6vw, 52px); }
+.card-head p { margin: 0; color: var(--ink-soft); }
+
+form { display: grid; gap: 30px; }
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: grid; gap: 12px; }
+legend, .label { padding: 0; font-family: var(--display); font-size: 22px; font-weight: 500; line-height: 1.3; }
+legend { margin-bottom: 12px; }
+.hint { font-size: 14px; color: var(--ink-soft); margin: -6px 0 0; }
+input[type="text"], select, textarea {
+  width: 100%;
+  font: 400 16px/1.5 var(--body);
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 12px 14px;
+}
+input::placeholder, textarea::placeholder { color: #9aa0ae; }
+textarea { min-height: 96px; resize: vertical; }
+select {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink-soft) 50%), linear-gradient(135deg, var(--ink-soft) 50%, transparent 50%);
+  background-position: calc(100% - 20px) 52%, calc(100% - 15px) 52%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 40px;
+}
+
+.chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.chip { position: relative; }
+.chip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.chip span {
+  display: inline-block;
+  padding: 11px 20px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.6);
+  font-size: 15px;
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+.chip input:checked + span { background: var(--rose); border-color: var(--rose-deep); font-weight: 400; }
+.chip:hover span { border-color: var(--rose-deep); }
+
+.stepper { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 999px; background: rgba(255, 255, 255, 0.6); justify-self: start; }
+.stepper button { width: 46px; height: 46px; border: 0; background: none; color: var(--ink); font-size: 22px; cursor: pointer; border-radius: 999px; }
+.stepper button:disabled { color: #b8bcc6; cursor: default; }
+.stepper output { min-width: 32px; text-align: center; font-family: var(--display); font-size: 24px; font-variant-numeric: tabular-nums; }
+
+.guests { display: grid; gap: 10px; }
+.guest { display: grid; grid-template-columns: 26px minmax(0, 1fr) minmax(0, 1fr); gap: 10px; align-items: center; }
+.guest-no { font-family: var(--display); font-style: italic; font-size: 20px; color: var(--sage-deep); }
+
+.attending-only { display: grid; gap: 30px; }
+.error { margin: 0; color: #a2575a; font-size: 15px; }
+.form-foot { display: grid; justify-items: center; gap: 14px; padding-top: 6px; }
+
+.thanks { display: grid; justify-items: center; gap: 14px; text-align: center; padding-block: 20px; }
+.thanks h2 { font-size: clamp(36px, 6vw, 48px); }
+.thanks p { margin: 0; max-width: 40ch; color: var(--ink-soft); }
+.demo-note { font-size: 13px; background: var(--sky); padding: 8px 14px; border-radius: 3px; }
+
+footer { padding-block: 72px calc(72px + env(safe-area-inset-bottom, 0px)); display: grid; justify-items: center; gap: 8px; text-align: center; }
+footer .names { font-size: 46px; }
+footer p { margin: 0; font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-soft); }
+
+@media (max-width: 760px) {
+  .intro-grid { grid-template-columns: minmax(0, 1fr); }
+  .portrait { max-width: 360px; width: 100%; margin: 0 auto; }
+  .facts { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .facts div { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+  .facts dd { margin: 0; text-align: right; }
+  .guest { grid-template-columns: 22px minmax(0, 1fr); }
+  .guest select { grid-column: 2; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .splash, .btn, .chip span { transition: none; }
+}
+</style>
+</head>
+<body class="locked">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="sprig" viewBox="0 0 120 40">
+    <g fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
+      <path d="M6 22 C 34 19, 70 23, 114 18"/>
+      <path d="M0 0 C 4 -5, 12 -5, 16 0 C 12 5, 4 5, 0 0 Z" transform="translate(22 20) rotate(-38)"/>
+      <path d="M0 0 C 4 -5, 12 -5, 16 0 C 12 5, 4 5, 0 0 Z" transform="translate(34 21) rotate(34)"/>
+      <path d="M0 0 C 4 -5, 12 -5, 16 0 C 12 5, 4 5, 0 0 Z" transform="translate(50 21) rotate(-40)"/>
+      <path d="M0 0 C 4 -5, 12 -5, 16 0 C 12 5, 4 5, 0 0 Z" transform="translate(62 21.5) rotate(32)"/>
+      <path d="M0 0 C 4 -5, 12 -5, 16 0 C 12 5, 4 5, 0 0 Z" transform="translate(78 20.5) rotate(-36)"/>
+      <path d="M0 0 C 4 -5, 12 -5, 16 0 C 12 5, 4 5, 0 0 Z" transform="translate(90 20) rotate(30)"/>
+      <circle cx="114" cy="18" r="2"/>
+    </g>
+  </symbol>
+</svg>
+
+<div class="splash" id="splash" role="dialog" aria-modal="true" aria-labelledby="splash-names">
+  <img src="images/intro.jpg" alt="Hanna és Balázs a rózsaszín kastély erkélyén">
+  <div class="splash-veil">
+    <div class="splash-top">
+      <span class="eyebrow">Meghívó</span>
+      <span class="names" id="splash-names">Hanna &amp; Balázs</span>
+    </div>
+    <div class="splash-bottom">
+      <p>Összeházasodunk, és szeretnénk, ha velünk ünnepelnétek.</p>
+      <button class="btn" id="open-invite" type="button">Meghívó megnyitása</button>
+    </div>
+  </div>
+</div>
+
+<main>
+  <section class="intro wrap">
+    <div class="intro-grid">
+      <div class="portrait">
+        <img src="images/balcony.jpg" alt="Hanna és Balázs egymásra mosolyognak az erkélyen">
+      </div>
+      <div class="intro-text">
+        <svg class="sprig" aria-hidden="true"><use href="#sprig"/></svg>
+        <span class="eyebrow">Hanna &amp; Balázs esküvője</span>
+        <h1>Szeretettel várunk benneteket</h1>
+        <p>Egy nyugodt, természetközeli hétvégét tervezünk a családunkkal és a barátainkkal. Kérjük, töltsétek ki a lenti kérdőívet, hogy mindent jól meg tudjunk szervezni.</p>
+        <dl class="facts">
+          <div><dt>Mikor</dt><dd>[dátum]</dd></div>
+          <div><dt>Hol</dt><dd>[helyszín]</dd></div>
+          <div><dt>Válaszoljatok</dt><dd>[határidő]-ig</dd></div>
+        </dl>
+        <a class="scroll-cue" href="#rsvp">Visszajelzés</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="rsvp wrap" id="rsvp">
+    <div class="rsvp-bg" aria-hidden="true">
+      <img src="images/trees.jpg" alt="" loading="lazy">
+    </div>
+
+    <div class="rsvp-inner">
+    <div class="card">
+      <div id="form-view">
+        <div class="card-head">
+          <svg class="sprig" aria-hidden="true"><use href="#sprig"/></svg>
+          <h2>Visszajelzés</h2>
+          <p>Családonként egy kitöltés elég.</p>
+        </div>
+
+        <form id="rsvp-form" novalidate>
+          <fieldset>
+            <label class="label" for="family">Kinek a nevében válaszolsz?</label>
+            <input type="text" id="family" name="family" placeholder="pl. Kovács család" autocomplete="family-name">
+          </fieldset>
+
+          <fieldset>
+            <legend>Ott lesztek?</legend>
+            <div class="chips">
+              <label class="chip"><input type="radio" id="attending-yes" name="attending" value="yes"><span>Igen, ott leszünk</span></label>
+              <label class="chip"><input type="radio" id="attending-no" name="attending" value="no"><span>Sajnos nem tudunk jönni</span></label>
+            </div>
+          </fieldset>
+
+          <div class="attending-only" id="attending-only">
+            <fieldset>
+              <legend>Hány fővel érkeztek?</legend>
+              <div class="stepper">
+                <button type="button" id="minus" aria-label="Eggyel kevesebb">−</button>
+                <output id="headcount" aria-live="polite">1</output>
+                <button type="button" id="plus" aria-label="Eggyel több">+</button>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Vendégek és menü</legend>
+              <p class="hint">Írjátok be mindenki nevét, és válasszatok menüt.</p>
+              <div class="guests" id="guests"></div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Maradtok éjszakára?</legend>
+              <div class="chips">
+                <label class="chip"><input type="radio" id="overnight-yes" name="overnight" value="Igen"><span>Igen</span></label>
+                <label class="chip"><input type="radio" id="overnight-no" name="overnight" value="Nem"><span>Nem</span></label>
+                <label class="chip"><input type="radio" id="overnight-maybe" name="overnight" value="Még nem tudjuk"><span>Még nem tudjuk</span></label>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <label class="label" for="allergies">Ételallergia vagy érzékenység</label>
+              <p class="hint">Ha nincs, hagyjátok üresen.</p>
+              <textarea id="allergies" name="allergies" placeholder="pl. Anna: laktózmentes"></textarea>
+            </fieldset>
+          </div>
+
+          <fieldset>
+            <label class="label" for="message">Üzennétek nekünk valamit?</label>
+            <textarea id="message" name="message"></textarea>
+          </fieldset>
+
+          <div class="form-foot">
+            <p class="error" id="error" hidden></p>
+            <button class="btn" type="submit" id="submit">Visszajelzés küldése</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="thanks" id="thanks" hidden>
+        <svg class="sprig" aria-hidden="true"><use href="#sprig"/></svg>
+        <h2 id="thanks-title">Köszönjük!</h2>
+        <p id="thanks-text"></p>
+        <p class="demo-note" id="demo-note" hidden>Előnézet: a válasz nem lett elküldve, mert még nincs beállítva a Google Sheets kapcsolat.</p>
+      </div>
+    </div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <svg class="sprig" aria-hidden="true"><use href="#sprig"/></svg>
+  <span class="names">Hanna &amp; Balázs</span>
+  <p>[dátum] · [helyszín]</p>
+</footer>
+
+<script>
+const SCRIPT_URL = "";
+
+const MENUS = ["Hagyományos menü", "Vegetáriánus menü", "Gyerekmenü"];
+const MAX_GUESTS = 10;
+
+const splash = document.getElementById("splash");
+const form = document.getElementById("rsvp-form");
+const attendingOnly = document.getElementById("attending-only");
+const guestsBox = document.getElementById("guests");
+const headcountOut = document.getElementById("headcount");
+const minus = document.getElementById("minus");
+const plus = document.getElementById("plus");
+const errorBox = document.getElementById("error");
+const submitBtn = document.getElementById("submit");
+
+let guests = [{ name: "", menu: MENUS[0] }];
+
+document.getElementById("open-invite").addEventListener("click", () => {
+  splash.classList.add("gone");
+  document.body.classList.remove("locked");
+});
+
+function renderGuests() {
+  guestsBox.innerHTML = "";
+  guests.forEach((guest, i) => {
+    const row = document.createElement("div");
+    row.className = "guest";
+
+    const no = document.createElement("span");
+    no.className = "guest-no";
+    no.textContent = i + 1 + ".";
+
+    const name = document.createElement("input");
+    name.type = "text";
+    name.id = "guest-name-" + i;
+    name.placeholder = "Név";
+    name.setAttribute("aria-label", i + 1 + ". vendég neve");
+    name.value = guest.name;
+    name.addEventListener("input", () => { guest.name = name.value; });
+
+    const menu = document.createElement("select");
+    menu.id = "guest-menu-" + i;
+    menu.setAttribute("aria-label", i + 1 + ". vendég menüje");
+    MENUS.forEach(m => menu.add(new Option(m, m, false, m === guest.menu)));
+    menu.addEventListener("change", () => { guest.menu = menu.value; });
+
+    row.append(no, name, menu);
+    guestsBox.append(row);
+  });
+  headcountOut.textContent = guests.length;
+  minus.disabled = guests.length <= 1;
+  plus.disabled = guests.length >= MAX_GUESTS;
+}
+
+minus.addEventListener("click", () => { guests.pop(); renderGuests(); });
+plus.addEventListener("click", () => { guests.push({ name: "", menu: MENUS[0] }); renderGuests(); });
+
+form.addEventListener("change", e => {
+  if (e.target.name === "attending") {
+    attendingOnly.hidden = e.target.value === "no";
+  }
+});
+
+function showError(text) {
+  errorBox.textContent = text;
+  errorBox.hidden = false;
+}
+
+function showThanks(family, attending, demo) {
+  document.getElementById("form-view").hidden = true;
+  document.getElementById("thanks").hidden = false;
+  document.getElementById("thanks-title").textContent = "Köszönjük, " + family + "!";
+  document.getElementById("thanks-text").textContent = attending
+    ? "Megkaptuk a válaszotokat. Nagyon várjuk, hogy együtt ünnepeljünk!"
+    : "Köszönjük, hogy jeleztétek. Hiányozni fogtok!";
+  document.getElementById("demo-note").hidden = !demo;
+  document.getElementById("rsvp").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+  errorBox.hidden = true;
+
+  const family = form.family.value.trim();
+  const attendingValue = form.attending.value;
+  const attending = attendingValue === "yes";
+
+  if (!family) return showError("Kérjük, írjátok be, kinek a nevében válaszoltok.");
+  if (!attendingValue) return showError("Kérjük, jelöljétek, hogy ott lesztek-e.");
+  if (attending && guests.some(g => !g.name.trim())) return showError("Kérjük, minden vendég nevét töltsétek ki.");
+
+  const payload = {
+    family: family,
+    attending: attending ? "Igen" : "Nem",
+    headcount: attending ? guests.length : 0,
+    traditional: attending ? guests.filter(g => g.menu === MENUS[0]).length : 0,
+    vegetarian: attending ? guests.filter(g => g.menu === MENUS[1]).length : 0,
+    kids: attending ? guests.filter(g => g.menu === MENUS[2]).length : 0,
+    guests: attending ? guests.map(g => g.name.trim() + " (" + g.menu + ")").join("; ") : "",
+    overnight: attending ? form.overnight.value : "",
+    allergies: attending ? form.allergies.value.trim() : "",
+    message: form.message.value.trim()
+  };
+
+  if (!SCRIPT_URL) return showThanks(family, attending, true);
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Küldés…";
+  try {
+    const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
+    const result = await res.json();
+    if (!result.ok) throw new Error();
+    showThanks(family, attending, false);
+  } catch {
+    showError("Nem sikerült elküldeni. Ellenőrizzétek az internetkapcsolatot, és próbáljátok újra.");
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Visszajelzés küldése";
+  }
+});
+
+renderGuests();
+</script>
+</body>
+</html>
